@@ -1,0 +1,2 @@
+V	270717195201Z		01	unknown	/C=US/ST=CA/O=Open vSwitch/OU=controllerca/CN=OVS controllerca CA Certificate (2017 Jul 19 15:52:01)
+V	270717195222Z		02	unknown	/C=US/ST=CA/O=Open vSwitch/OU=controllerca/CN=OVS controllerca CA Certificate (2017 Jul 19 15:52:01)

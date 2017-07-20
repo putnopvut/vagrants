@@ -1,0 +1,42 @@
+#!/bin/bash
+set -e
+
+nic=$1      # Network interface to use for OVN on this host
+mtu=$2      # Interface MTU
+ip=$3       # Interface IP address
+repo=$4     # OVS git repository
+branch=$5   # git branch
+
+# Configure and enable OVN network interface
+sudo ip addr add "$ip/24" dev $nic || echo "ip addr add $ip/24 dev $nic failed, already set?"
+sudo ip link set dev $nic mtu $mtu up
+
+# Build and install OVN and OVS
+/vagrant/build_ovn $repo $branch
+
+# Start OVN and OVS services
+sudo systemctl enable openvswitch
+sudo systemctl start openvswitch
+
+sudo systemctl enable ovn-controller
+sudo systemctl start ovn-controller
+
+# Configure OVN and OVS
+OVN_DB_IP=$(cat /etc/hosts | grep -oP ".*(?= central)")
+OVN_SB_DB_PORT=6642
+
+OVN_SYS_ID=$(hostname --short)
+HOST_IP=$ip
+OVN_SB_REMOTE="ssl:${OVN_DB_IP}:${OVN_SB_DB_PORT}"
+
+sudo ovs-vsctl set-ssl /vagrant/pki/${OVN_SYS_ID}-privkey.pem  /vagrant/pki/${OVN_SYS_ID}-cert.pem /vagrant/pki/switchca/cacert.pem
+
+sudo ovs-vsctl --no-wait init
+sudo ovs-vsctl --no-wait set open_vswitch . system-type="vagrant"
+sudo ovs-vsctl --no-wait set open_vswitch . external-ids:system-id="$OVN_SYS_ID"
+sudo ovs-vsctl --no-wait set open_vswitch . external-ids:hostname="$OVN_SYS_ID"
+
+sudo ovs-vsctl --no-wait set open_vswitch . external-ids:ovn-bridge="br-int"
+sudo ovs-vsctl --no-wait set open_vswitch . external-ids:ovn-encap-ip="$HOST_IP"
+sudo ovs-vsctl --no-wait set open_vswitch . external-ids:ovn-encap-type="geneve"
+sudo ovs-vsctl --no-wait set open_vswitch . external-ids:ovn-remote="$OVN_SB_REMOTE"

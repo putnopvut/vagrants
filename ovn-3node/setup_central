@@ -1,0 +1,36 @@
+#!/bin/bash
+set -e
+
+nic=$1      # Network interface to use for OVN on this host
+mtu=$2      # Interface MTU
+ip=$3       # Interface IP address
+repo=$4     # OVS repository
+branch=$5   # Repository branch
+
+# Enable password-less SSH between nodes
+cat /vagrant/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys
+cat /vagrant/id_rsa >> /home/vagrant/.ssh/id_rsa
+chown -R vagrant:vagrant /home/vagrant/.ssh
+chmod 600 /home/vagrant/.ssh/id_rsa
+
+# Configure and enable OVN network interface
+sudo ip addr add "$ip/24" dev $nic
+sudo ip link set dev $nic mtu $mtu up
+
+# Build and install OVN
+/vagrant/build_ovn $repo $branch
+
+# Start OVN central services
+sudo systemctl enable ovn-northd
+sudo systemctl start ovn-northd
+
+# Configure OVN central services
+sudo ovn-nbctl init
+sudo ovn-nbctl set-ssl /vagrant/pki/ovnnb-privkey.pem  /vagrant/pki/ovnnb-cert.pem /vagrant/pki/switchca/cacert.pem
+sudo ovn-nbctl set-connection pssl:6641
+
+sudo ovn-sbctl init
+sudo ovn-sbctl set-ssl /vagrant/pki/ovnsb-privkey.pem  /vagrant/pki/ovnsb-cert.pem /vagrant/pki/switchca/cacert.pem
+sudo ovn-sbctl set-connection role=ovn-controller pssl:6642
+sudo ovs-vsctl set open . external-ids:ovn-remote=ssl:127.0.0.1:6642
+

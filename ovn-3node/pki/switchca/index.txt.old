@@ -1,0 +1,8 @@
+V	270717195201Z		01	unknown	/C=US/ST=CA/O=Open vSwitch/OU=switchca/CN=OVS switchca CA Certificate (2017 Jul 19 15:52:01)
+V	270717195222Z		02	unknown	/C=US/ST=CA/O=Open vSwitch/OU=switchca/CN=OVS switchca CA Certificate (2017 Jul 19 15:52:01)
+V	270717195232Z		03	unknown	/C=US/ST=CA/O=Open vSwitch/OU=Open vSwitch certifier/CN=ovnsb id:6d10dcac-b4e9-4e6e-bef1-fd56675afc68
+V	270717195240Z		04	unknown	/C=US/ST=CA/O=Open vSwitch/OU=Open vSwitch certifier/CN=ovnnb id:cb9821a1-b47b-4862-89a0-b0124c6ba2d0
+V	270717195246Z		05	unknown	/C=US/ST=CA/O=Open vSwitch/OU=Open vSwitch certifier/CN=compute1 id:30d926d2-2bc7-4de6-a281-666bc2090803
+V	270717195252Z		06	unknown	/C=US/ST=CA/O=Open vSwitch/OU=Open vSwitch certifier/CN=compute2 id:8387b9c5-a4c9-4133-823d-ce99c8261b19
+V	270717210628Z		07	unknown	/C=US/ST=CA/O=Open vSwitch/OU=Open vSwitch certifier/CN=compute2
+V	270717210635Z		08	unknown	/C=US/ST=CA/O=Open vSwitch/OU=Open vSwitch certifier/CN=compute1
