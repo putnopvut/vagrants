@@ -1,4 +1,4 @@
-# ovn-vagrant: Virtual OVN Cluster using Vagrant
+# ovn-3node: Virtual OVN Cluster using Vagrant
 
 Install vagrant and libvirt provider:
 
@@ -7,8 +7,7 @@ sudo yum install -y vagrant
 sudo yum install -y vagrant-libvirt
 ```
 
-Avoid having to enter credentials every time vagrant uses 
-libvirt:
+Make sure vagrant has permissions needed to use libvirt:
 
 ```bash
 sudo gpasswd -a ${USER} libvirt
@@ -19,33 +18,29 @@ Checkout this repository.
 
 ```bash
 git clone https://github.com/hlrichardson/vagrants
-cd ovn-vagrant
+cd vagrants/ovn-3node
 ```
 
-Create CentOS VMs (OVN central and two OVN compute nodes)
+Create CentOS VMs (OVN central and two OVN compute nodes):
 
 ```bash
-vagrant up --provider libvirt
+vagrant up central
+vagrant up compute1
+vagrant up compute2
 ```
 
-Look around in central node:
+After provisioning is complete, ssh to central node, if
+everything is worrking `ovn-sbctl show` should list two
+chassis:
 ```bash
 vagrant ssh central
 sudo ovn-sbctl show
 exit
 ```
 
-Look around in compute1 node:
+Optionally, a third compute node running Fedora can be started:
 ```bash
-vagrant ssh compute1
-sudo ovs-vsctl show
-exit
-```
-
-Look around in compute2 node:
-```bash
-vagrant ssh compute2
-sudo ovs-vsctl show
+vagrant up compute3
 exit
 ```
 
