@@ -83,7 +83,7 @@ Vagrant.configure("2") do |config|
         domain.nic_model_type = server[:nic_type]
       end
 
-      setup_args = "#{server[:nic1]} #{server[:mtu]} #{server[:ip]} #{ovn_repo} #{ovn_branch}"
+      setup_args = "#{server[:ip]} #{ovn_repo} #{ovn_branch}"
       if server[:name] == "central"
           node.vm.provision "shell", path: "setup_central", :args => "#{setup_args}" 
       else # compute node

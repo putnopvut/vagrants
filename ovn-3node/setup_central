@@ -1,11 +1,9 @@
 #!/bin/bash
 set -e
 
-nic=$1      # Network interface to use for OVN on this host
-mtu=$2      # Interface MTU
-ip=$3       # Interface IP address
-repo=$4     # OVS repository
-branch=$5   # Repository branch
+ip=$1       # Interface IP address
+repo=$2     # OVS repository
+branch=$3   # Repository branch
 
 # Enable password-less SSH between nodes
 cat /vagrant/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys
@@ -13,9 +11,8 @@ cat /vagrant/id_rsa >> /home/vagrant/.ssh/id_rsa
 chown -R vagrant:vagrant /home/vagrant/.ssh
 chmod 600 /home/vagrant/.ssh/id_rsa
 
-# Configure and enable OVN network interface
-sudo ip addr add "$ip/24" dev $nic
-sudo ip link set dev $nic mtu $mtu up
+# Work around vagrant 1.9.1 issue #8142
+sudo ifup eth1 > /dev/null || true
 
 # Build and install OVN
 /vagrant/build_ovn $repo $branch

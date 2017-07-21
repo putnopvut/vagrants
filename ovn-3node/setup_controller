@@ -1,15 +1,12 @@
 #!/bin/bash
 set -e
 
-nic=$1      # Network interface to use for OVN on this host
-mtu=$2      # Interface MTU
-ip=$3       # Interface IP address
-repo=$4     # OVS git repository
-branch=$5   # git branch
+ip=$1       # Interface IP address
+repo=$2     # OVS git repository
+branch=$3   # git branch
 
-# Configure and enable OVN network interface
-sudo ip addr add "$ip/24" dev $nic || echo "ip addr add $ip/24 dev $nic failed, already set?"
-sudo ip link set dev $nic mtu $mtu up
+# Work around vagrant 1.9.1 issue #8142
+sudo ifup eth1 > /dev/null || true
 
 # Build and install OVN and OVS
 /vagrant/build_ovn $repo $branch
