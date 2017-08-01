@@ -15,6 +15,8 @@ ovn_cfg = [
      :nic_type => "virtio",
      :nic0 => "eth0",
      :nic1 => "eth1",
+     :dmz_network => "fd94:41f3:071a:9d54::/64",
+     :inside_network => "fd94:41f3:071a:9d55::/64",
    },{
      :name => "compute1",
      :box => "centos/7",
@@ -27,6 +29,12 @@ ovn_cfg = [
      :nic_type => "virtio",
      :nic0 => "eth0",
      :nic1 => "eth1",
+     :dmz_ip => "fd94:41f3:071a:9d54::1",
+     :dmz_mac => "02:ac:10:ff:01:30",
+     :dmz_vm => "vm1",
+     :inside_ip => "fd94:41f3:071a:9d55::1",
+     :inside_mac => "02:ac:10:ff:01:94",
+     :inside_vm => "vm3",
    },{
      :name => "compute2",
      :box => "centos/7",
@@ -39,18 +47,12 @@ ovn_cfg = [
      :nic_type => "virtio",
      :nic0 => "eth0",
      :nic1 => "eth1",
-   },{
-     :name => "compute3",
-     :box => "fedora/26-cloud-base",
-     :autostart => false,
-     :host_name  => "compute3.ovn.dev",
-     :ip => "192.168.33.33",
-     :memory => 512,
-     :cpus => 1,
-     :mtu => 1500,
-     :nic_type => "virtio",
-     :nic0 => "eth0",
-     :nic1 => "eth1",
+     :dmz_ip => "fd94:41f3:071a:9d54::2",
+     :dmz_mac => "02:ac:10:ff:01:31",
+     :dmz_vm => "vm2",
+     :inside_ip => "fd94:41f3:071a:9d55::2",
+     :inside_mac => "02:ac:10:ff:01:95",
+     :inside_vm => "vm4",
    }
 ]
 
@@ -86,8 +88,10 @@ Vagrant.configure("2") do |config|
       setup_args = "#{server[:ip]} #{ovn_repo} #{ovn_branch}"
       if server[:name] == "central"
           node.vm.provision "shell", path: "setup_central", :args => "#{setup_args}" 
+          node.vm.provision "shell", path: "setup_routing_central", :args => "#{server[:dmz_network]} #{server[:inside_network]}"
       else # compute node
           node.vm.provision "shell", path: "setup_controller", :args => "#{setup_args}"
+          node.vm.provision "shell", path: "setup_routing_controller", :args => "#{server[:dmz_ip]} #{server[:dmz_mac]} #{server[:inside_ip]} #{server[:inside_mac]} #{server[:dmz_vm]} #{server[:inside_vm]}"
       end
     end
   end

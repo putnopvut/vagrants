@@ -1,0 +1,41 @@
+#!/bin/bash
+set -e
+
+dmz_network=$1
+inside_network=$2
+
+# Create logical switches
+sudo ovn-nbctl ls-add inside
+sudo ovn-nbctl ls-add dmz
+
+sudo ovn-nbctl lr-add tenant1
+
+sudo ovn-nbctl lrp-add tenant1 tenant1-dmz 02:ac:10:ff:01:29 ${dmz_network}
+
+ovn-nbctl lsp-add dmz dmz-tenant1
+ovn-nbctl lsp-set-type dmz-tenant1 router
+ovn-nbctl lsp-set-addresses dmz-tenant1 02:ac:10:ff:01:29
+ovn-nbctl lsp-set-options dmz-tenant1 router-port=tenant1-dmz
+
+ovn-nbctl lrp-add tenant1 tenant1-inside 02:ac:10:ff:01:93 ${inside_network}
+
+ovn-nbctl lsp-add inside inside-tenant1
+ovn-nbctl lsp-set-type inside-tenant1 router
+ovn-nbctl lsp-set-addresses inside-tenant1 02:ac:10:ff:01:93
+ovn-nbctl lsp-set-options inside-tenant1 router-port=tenant1-inside
+
+ovn-nbctl lsp-add dmz dmz-vm1
+ovn-nbctl lsp-set-addresses dmz-vm1 "02:ac:10:ff:01:30"
+ovn-nbctl lsp-set-port-security dmz-vm1 "02:ac:10:ff:01:30"
+
+ovn-nbctl lsp-add dmz dmz-vm2
+ovn-nbctl lsp-set-addresses dmz-vm2 "02:ac:10:ff:01:31"
+ovn-nbctl lsp-set-port-security dmz-vm2 "02:ac:10:ff:01:31"
+
+ovn-nbctl lsp-add inside inside-vm3
+ovn-nbctl lsp-set-addresses inside-vm3 "02:ac:10:ff:01:94"
+ovn-nbctl lsp-set-port-security inside-vm3 "02:ac:10:ff:01:94"
+
+ovn-nbctl lsp-add inside inside-vm4
+ovn-nbctl lsp-set-addresses inside-vm4 "02:ac:10:ff:01:95"
+ovn-nbctl lsp-set-port-security inside-vm4 "02:ac:10:ff:01:95"
