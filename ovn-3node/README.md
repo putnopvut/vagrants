@@ -17,7 +17,7 @@ newgrp libvirt
 Checkout this repository.
 
 ```bash
-git clone https://github.com/hlrichardson/vagrants
+git clone https://github.com/putnopvut/vagrants
 cd vagrants/ovn-3node
 ```
 
