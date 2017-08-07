@@ -10,14 +10,17 @@ inside_vm=$6
 
 echo "dmz_ip: ${dmz_ip}, dmz_mac: ${dmz_mac}, inside_ip: ${inside_ip}, inside_mac: ${inside_mac}, dmz_vm: ${dmz_vm}, inside_vm: ${inside_vm}"
 
+sudo ovs-vsctl --may-exist add-br br-int
+
 sudo ip netns add $dmz_vm
 sudo ovs-vsctl add-port br-int $dmz_vm -- set interface $dmz_vm type=internal
-sudo ip link set $dmz_vm address $dmz_mac
+#sudo ip link set $dmz_vm address $dmz_mac
 sudo ip link set $dmz_vm netns $dmz_vm
 sudo ovs-vsctl set Interface $dmz_vm external_ids:iface-id=dmz-$dmz_vm
 sudo ip netns exec $dmz_vm ip link set $dmz_vm address $dmz_mac
 sudo ip netns exec $dmz_vm ip addr add ${dmz_ip}/64 dev $dmz_vm
 sudo ip netns exec $dmz_vm ip link set $dmz_vm up
+sudo ip netns exec $dmz_vm ip route add default via fd94:41f3:071a:9d54::1
 
 sudo ip netns add $inside_vm
 sudo ovs-vsctl add-port br-int $inside_vm -- set interface $inside_vm type=internal
@@ -27,3 +30,4 @@ sudo ovs-vsctl set Interface $inside_vm external_ids:iface-id=inside-$inside_vm
 sudo ip netns exec $inside_vm ip link set $inside_vm address $inside_mac
 sudo ip netns exec $inside_vm ip addr add ${inside_ip}/64 dev $inside_vm
 sudo ip netns exec $inside_vm ip link set $inside_vm up
+sudo ip netns exec $inside_vm ip route add default via fd94:41f3:071a:9d55::1

@@ -25,17 +25,17 @@ ovn-nbctl lsp-set-addresses inside-tenant1 02:ac:10:ff:01:93
 ovn-nbctl lsp-set-options inside-tenant1 router-port=tenant1-inside
 
 ovn-nbctl lsp-add dmz dmz-vm1
-ovn-nbctl lsp-set-addresses dmz-vm1 "02:ac:10:ff:01:30"
-ovn-nbctl lsp-set-port-security dmz-vm1 "02:ac:10:ff:01:30"
+ovn-nbctl lsp-set-addresses dmz-vm1 "02:ac:10:ff:01:30 fd94:41f3:071a:9d54::2"
+ovn-nbctl lsp-set-port-security dmz-vm1 "02:ac:10:ff:01:30 fd94:41f3:071a:9d54::2"
 
 ovn-nbctl lsp-add dmz dmz-vm2
-ovn-nbctl lsp-set-addresses dmz-vm2 "02:ac:10:ff:01:31"
-ovn-nbctl lsp-set-port-security dmz-vm2 "02:ac:10:ff:01:31"
+ovn-nbctl lsp-set-addresses dmz-vm2 "02:ac:10:ff:01:31 fd94:41f3:071a:9d54::3"
+ovn-nbctl lsp-set-port-security dmz-vm2 "02:ac:10:ff:01:31 fd94:41f3:071a:9d54::3"
 
 ovn-nbctl lsp-add inside inside-vm3
-ovn-nbctl lsp-set-addresses inside-vm3 "02:ac:10:ff:01:94"
-ovn-nbctl lsp-set-port-security inside-vm3 "02:ac:10:ff:01:94"
+ovn-nbctl lsp-set-addresses inside-vm3 "02:ac:10:ff:01:94 fd94:41f3:071a:9d55::2"
+ovn-nbctl lsp-set-port-security inside-vm3 "02:ac:10:ff:01:94 fd94:41f3:071a:9d55::2"
 
 ovn-nbctl lsp-add inside inside-vm4
-ovn-nbctl lsp-set-addresses inside-vm4 "02:ac:10:ff:01:95"
-ovn-nbctl lsp-set-port-security inside-vm4 "02:ac:10:ff:01:95"
+ovn-nbctl lsp-set-addresses inside-vm4 "02:ac:10:ff:01:95 fd94:41f3:071a:9d55::3"
+ovn-nbctl lsp-set-port-security inside-vm4 "02:ac:10:ff:01:95 fd94:41f3:071a:9d55::3"
