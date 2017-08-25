@@ -1,0 +1,95 @@
+#!/bin/bash
+set -e
+
+ovs-vsctl --may-exist add-br br-int
+
+ovn-nbctl ls-add sw0
+
+# add the router
+ovn-nbctl lr-add ro0
+ovn-nbctl set Logical_Router ro0 options:chassis=central
+
+# create router port for the connection to sw0
+ovn-nbctl lrp-add ro0 ro0-sw0 02:ac:10:ff:01:93 172.16.255.193/26
+
+# create the sw0 switch port for connection to ro0
+ovn-nbctl lsp-add sw0 sw0-ro0
+ovn-nbctl lsp-set-type sw0-ro0 router
+ovn-nbctl lsp-set-addresses sw0-ro0 02:ac:10:ff:01:93
+ovn-nbctl lsp-set-options sw0-ro0 router-port=ro0-sw0
+
+# sw0-vm1 will connect to vm1
+ovn-nbctl lsp-add sw0 sw0-vm1
+ovn-nbctl lsp-set-addresses sw0-vm1 "02:ac:10:ff:01:94 172.16.255.194"
+ovn-nbctl lsp-set-port-security sw0-vm1 "02:ac:10:ff:01:94 172.16.255.194"
+
+# sw0-vm2 will connect to vm2
+ovn-nbctl lsp-add sw0 sw0-vm2
+ovn-nbctl lsp-set-addresses sw0-vm2 "02:ac:10:ff:01:95 172.16.255.195"
+ovn-nbctl lsp-set-port-security sw0-vm2 "02:ac:10:ff:01:95 172.16.255.195"
+
+# Create a new switch for vm3 to connect to
+ovn-nbctl lrp-add ro0 ro0-sw1 02:ac:10:ff:01:01 10.0.0.1/24
+ovn-nbctl ls-add sw1
+ovn-nbctl lsp-add sw1 sw1-ro0
+ovn-nbctl lsp-set-type sw1-ro0 router
+ovn-nbctl lsp-set-addresses sw1-ro0 02:ac:10:ff:01:01
+ovn-nbctl lsp-set-options sw1-ro0 router-port=ro0-sw1
+ovn-nbctl lsp-add sw1 sw1-vm3
+ovn-nbctl lsp-set-addresses sw1-vm3 "02:ac:10:ff:01:02 10.0.0.2"
+ovn-nbctl lsp-set-port-security sw1-vm3 "02:ac:10:ff:01:02 10.0.0.2"
+
+sw0Dhcp="$(ovn-nbctl create DHCP_Options cidr=172.16.255.192/26 \
+options="\"server_id\"=\"172.16.255.193\" \"server_mac\"=\"02:ac:10:ff:01:93\" \
+\"lease_time\"=\"3600\" \"router\"=\"172.16.255.193\"")"
+echo $sw0Dhcp
+
+sw1Dhcp="$(ovn-nbctl create DHCP_Options cidr=10.0.0.0/24 \
+options="\"server_id\"=\"10.0.0.1\" \"server_mac\"=\"02:ac:10:ff:01:01\" \
+\"lease_time\"=\"3600\" \"router\"=\"10.0.0.1\"")"
+echo $sw1Dhcp
+
+ovn-nbctl lsp-set-dhcpv4-options sw0-vm1 $sw0Dhcp
+ovn-nbctl lsp-get-dhcpv4-options sw0-vm1
+
+ovn-nbctl lsp-set-dhcpv4-options sw0-vm2 $sw0Dhcp
+ovn-nbctl lsp-get-dhcpv4-options sw0-vm2
+
+ovn-nbctl lsp-set-dhcpv4-options sw1-vm3 $sw1Dhcp
+ovn-nbctl lsp-get-dhcpv4-options sw1-vm3
+
+ip netns add vm1
+ovs-vsctl add-port br-int vm1 -- set interface vm1 type=internal
+ip link set vm1 address 02:ac:10:ff:01:94
+ip link set vm1 netns vm1
+ovs-vsctl set Interface vm1 external_ids:iface-id=sw0-vm1
+ip netns exec vm1 dhclient --no-pid vm1
+ip netns exec vm1 ip addr show vm1
+ip netns exec vm1 ip route show
+
+ip netns add vm2
+ovs-vsctl add-port br-int vm2 -- set interface vm2 type=internal
+ip link set vm2 address 02:ac:10:ff:01:95
+ip link set vm2 netns vm2
+ovs-vsctl set Interface vm2 external_ids:iface-id=sw0-vm2
+ip netns exec vm2 dhclient --no-pid vm2
+ip netns exec vm2 ip addr show vm2
+ip netns exec vm2 ip route show
+
+ip netns add vm3
+ovs-vsctl add-port br-int vm3 -- set interface vm3 type=internal
+ip link set vm3 address 02:ac:10:ff:01:02
+ip link set vm3 netns vm3
+ovs-vsctl set Interface vm3 external_ids:iface-id=sw1-vm3
+ip netns exec vm3 dhclient --no-pid vm3
+ip netns exec vm3 ip addr show vm3
+ip netns exec vm3 ip route show
+
+ovn-nbctl lb-add lb0 10.0.0.100 172.16.255.194,172.16.255.195
+ovn-nbctl lr-lb-add ro0 lb0
+
+mkdir /tmp/www
+mkdir /tmp/www/vm1
+echo "I am vm1" > /tmp/www/vm1/index.html
+mkdir /tmp/www/vm2
+echo "I am vm2" > /tmp/www/vm2/index.html
