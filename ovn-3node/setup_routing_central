@@ -89,12 +89,12 @@ ip netns exec vm3 ip route add default via fd0f:0f07:71c6:b050::1
 ip netns exec vm3 ip addr show vm3
 ip netns exec vm3 ip route show
 
-#echo "Adding load balancer"
-#ovn-nbctl lb-add lb0 fd0f:0f07:71c6:b050::100 fd0f:0f07:71c6:af56::194,fd0f:0f07:71c6:af56::195
-#ovn-nbctl lr-lb-add ro0 lb0
-#
-#mkdir /tmp/www
-#mkdir /tmp/www/vm1
-#echo "I am vm1" > /tmp/www/vm1/index.html
-#mkdir /tmp/www/vm2
-#echo "I am vm2" > /tmp/www/vm2/index.html
+echo "Adding load balancer"
+ovn-nbctl lb-add lb0 fd0f:0f07:71c6:b050::100 fd0f:0f07:71c6:af56::194,fd0f:0f07:71c6:af56::195
+ovn-nbctl lr-lb-add ro0 lb0
+
+mkdir /tmp/www
+mkdir /tmp/www/vm1
+echo "I am vm1" > /tmp/www/vm1/index.html
+mkdir /tmp/www/vm2
+echo "I am vm2" > /tmp/www/vm2/index.html
