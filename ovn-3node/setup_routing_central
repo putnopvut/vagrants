@@ -63,6 +63,7 @@ ip link set vm1 address 02:ac:10:ff:01:94
 ip link set vm1 netns vm1
 ovs-vsctl set Interface vm1 external_ids:iface-id=sw0-vm1
 ip netns exec vm1 dhclient -6 --no-pid vm1
+ip netns exec vm1 ip route add default via fd0f:0f07:71c6:af56::193
 ip netns exec vm1 ip addr show vm1
 ip netns exec vm1 ip route show
 
@@ -73,6 +74,7 @@ ip link set vm2 address 02:ac:10:ff:01:95
 ip link set vm2 netns vm2
 ovs-vsctl set Interface vm2 external_ids:iface-id=sw0-vm2
 ip netns exec vm2 dhclient -6 --no-pid vm2
+ip netns exec vm2 ip route add default via fd0f:0f07:71c6:af56::193
 ip netns exec vm2 ip addr show vm2
 ip netns exec vm2 ip route show
 
@@ -83,6 +85,7 @@ ip link set vm3 address 02:ac:10:ff:01:02
 ip link set vm3 netns vm3
 ovs-vsctl set Interface vm3 external_ids:iface-id=sw1-vm3
 ip netns exec vm3 dhclient -6 --no-pid vm3
+ip netns exec vm3 ip route add default via fd0f:0f07:71c6:b050::1
 ip netns exec vm3 ip addr show vm3
 ip netns exec vm3 ip route show
 
