@@ -1,5 +1,5 @@
-ovn_repo         = "https://github.com/putnopvut/ovs.git"
-ovn_branch       = "ipv6_lb"
+ovn_repo         = "https://github.com/openvswitch/ovs.git"
+ovn_branch       = "master"
 ovn_pkg_dir      = "/vagrant/pkgs"
 
 ovn_cfg = [

@@ -4,6 +4,8 @@ set -e
 ovs-vsctl --may-exist add-br br-int
 
 ovn-nbctl ls-add sw0
+ovn-nbctl set Logical-Switch sw0 other_config:subnet=172.16.255.192/26
+ovn-nbctl set Logical-Switch sw0 other_config:exclude_ips="172.16.255.194 172.16.255.195"
 
 # add the router
 ovn-nbctl lr-add ro0
@@ -20,24 +22,26 @@ ovn-nbctl lsp-set-options sw0-ro0 router-port=ro0-sw0
 
 # sw0-vm1 will connect to vm1
 ovn-nbctl lsp-add sw0 sw0-vm1
-ovn-nbctl lsp-set-addresses sw0-vm1 "02:ac:10:ff:01:94 172.16.255.194"
-ovn-nbctl lsp-set-port-security sw0-vm1 "02:ac:10:ff:01:94 172.16.255.194"
+ovn-nbctl lsp-set-addresses sw0-vm1 "02:ac:10:ff:01:94 dynamic"
+#ovn-nbctl lsp-set-port-security sw0-vm1 "02:ac:10:ff:01:94"
 
 # sw0-vm2 will connect to vm2
 ovn-nbctl lsp-add sw0 sw0-vm2
-ovn-nbctl lsp-set-addresses sw0-vm2 "02:ac:10:ff:01:95 172.16.255.195"
-ovn-nbctl lsp-set-port-security sw0-vm2 "02:ac:10:ff:01:95 172.16.255.195"
+ovn-nbctl lsp-set-addresses sw0-vm2 "02:ac:10:ff:01:95 dynamic"
+#ovn-nbctl lsp-set-port-security sw0-vm2 "02:ac:10:ff:01:95"
 
 # Create a new switch for vm3 to connect to
 ovn-nbctl lrp-add ro0 ro0-sw1 02:ac:10:ff:01:01 10.0.0.1/24
 ovn-nbctl ls-add sw1
+ovn-nbctl set Logical-Switch sw1 other_config:subnet=10.0.0.0/24
+ovn-nbctl set Logical-Switch sw1 other_config:exclude_ips="10.0.0.2..10.0.0.100"
 ovn-nbctl lsp-add sw1 sw1-ro0
 ovn-nbctl lsp-set-type sw1-ro0 router
 ovn-nbctl lsp-set-addresses sw1-ro0 02:ac:10:ff:01:01
 ovn-nbctl lsp-set-options sw1-ro0 router-port=ro0-sw1
 ovn-nbctl lsp-add sw1 sw1-vm3
-ovn-nbctl lsp-set-addresses sw1-vm3 "02:ac:10:ff:01:02 10.0.0.2"
-ovn-nbctl lsp-set-port-security sw1-vm3 "02:ac:10:ff:01:02 10.0.0.2"
+ovn-nbctl lsp-set-addresses sw1-vm3 "02:ac:10:ff:01:02 dynamic"
+#ovn-nbctl lsp-set-port-security sw1-vm3 "02:ac:10:ff:01:02"
 
 sw0Dhcp="$(ovn-nbctl create DHCP_Options cidr=172.16.255.192/26 \
 options="\"server_id\"=\"172.16.255.193\" \"server_mac\"=\"02:ac:10:ff:01:93\" \
@@ -84,12 +88,3 @@ ovs-vsctl set Interface vm3 external_ids:iface-id=sw1-vm3
 ip netns exec vm3 dhclient --no-pid vm3
 ip netns exec vm3 ip addr show vm3
 ip netns exec vm3 ip route show
-
-ovn-nbctl lb-add lb0 10.0.0.100 172.16.255.194,172.16.255.195
-ovn-nbctl lr-lb-add ro0 lb0
-
-mkdir /tmp/www
-mkdir /tmp/www/vm1
-echo "I am vm1" > /tmp/www/vm1/index.html
-mkdir /tmp/www/vm2
-echo "I am vm2" > /tmp/www/vm2/index.html
