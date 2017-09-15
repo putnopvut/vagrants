@@ -1,17 +1,28 @@
 #!/bin/bash
 set -e
 
+# Just in case it hasn't been created automatically by OVN
+# yet, create the integration bridge.
 ovs-vsctl --may-exist add-br br-int
 
-ovn-nbctl ls-add sw0
-ovn-nbctl set Logical-Switch sw0 other_config:subnet=172.16.255.192/26
-ovn-nbctl set Logical-Switch sw0 other_config:exclude_ips="172.16.255.194 172.16.255.195"
-
-# add the router
+# Add the Router. The router will have two logical router ports
+# on it. The first logical router port will be on the 172.16.255.192/26
+# network. The second will be on the 10.0.0.0/24 network.
 ovn-nbctl lr-add ro0
 ovn-nbctl set Logical_Router ro0 options:chassis=central
 
-# create router port for the connection to sw0
+# Add the logical switch sw0. This will be on the 172.16.255.192/26
+# network.
+ovn-nbctl ls-add sw0
+
+# These two lines assist in dynamic address configuration for logical
+# switch ports. This first line says to assign addresses from the 
+# 172.16.255.192/26 network.
+ovn-nbctl set Logical-Switch sw0 other_config:subnet=172.16.255.192/26
+# This second line says not to assign the IP addresses 172.16.255.194
+# and 172.16.255.195.
+ovn-nbctl set Logical-Switch sw0 other_config:exclude_ips="172.16.255.194 172.16.255.195"
+
 ovn-nbctl lrp-add ro0 ro0-sw0 02:ac:10:ff:01:93 172.16.255.193/26
 
 # create the sw0 switch port for connection to ro0
@@ -22,26 +33,39 @@ ovn-nbctl lsp-set-options sw0-ro0 router-port=ro0-sw0
 
 # sw0-vm1 will connect to vm1
 ovn-nbctl lsp-add sw0 sw0-vm1
+# Setting the address "dynamic" here will mean that the switch will
+# do the IPAM itself. Since the switch is configured for the 172.16.255.192/26
+# subnet, the address assigned to this switch will come from that subnet.
+# .192 is the network address
+# .193 gets assigned to the router
+# .194 and .195 are excluded.
+# So the address that will end up here will be 172.16.255.196
 ovn-nbctl lsp-set-addresses sw0-vm1 "02:ac:10:ff:01:94 dynamic"
-#ovn-nbctl lsp-set-port-security sw0-vm1 "02:ac:10:ff:01:94"
 
 # sw0-vm2 will connect to vm2
 ovn-nbctl lsp-add sw0 sw0-vm2
+# This follows similar logic to the previous dynamic address assignment.
+# The next available address is 172.16.255.197
 ovn-nbctl lsp-set-addresses sw0-vm2 "02:ac:10:ff:01:95 dynamic"
-#ovn-nbctl lsp-set-port-security sw0-vm2 "02:ac:10:ff:01:95"
+
+ovn-nbctl lrp-add ro0 ro0-sw1 02:ac:10:ff:01:01 10.0.0.1/24
 
 # Create a new switch for vm3 to connect to
-ovn-nbctl lrp-add ro0 ro0-sw1 02:ac:10:ff:01:01 10.0.0.1/24
 ovn-nbctl ls-add sw1
 ovn-nbctl set Logical-Switch sw1 other_config:subnet=10.0.0.0/24
+# This is similar to what was done on sw0, except here we
+# have specified a range of addresses to exclude. Everything between
+# .2 and .100 will not be assigned.
 ovn-nbctl set Logical-Switch sw1 other_config:exclude_ips="10.0.0.2..10.0.0.100"
 ovn-nbctl lsp-add sw1 sw1-ro0
 ovn-nbctl lsp-set-type sw1-ro0 router
 ovn-nbctl lsp-set-addresses sw1-ro0 02:ac:10:ff:01:01
 ovn-nbctl lsp-set-options sw1-ro0 router-port=ro0-sw1
 ovn-nbctl lsp-add sw1 sw1-vm3
+# .1 is taken by the router.
+# .2-.100 are excluded.
+# The address that will end up here is 10.0.0.101
 ovn-nbctl lsp-set-addresses sw1-vm3 "02:ac:10:ff:01:02 dynamic"
-#ovn-nbctl lsp-set-port-security sw1-vm3 "02:ac:10:ff:01:02"
 
 sw0Dhcp="$(ovn-nbctl create DHCP_Options cidr=172.16.255.192/26 \
 options="\"server_id\"=\"172.16.255.193\" \"server_mac\"=\"02:ac:10:ff:01:93\" \

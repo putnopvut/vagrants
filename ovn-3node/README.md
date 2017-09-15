@@ -21,16 +21,14 @@ git clone https://github.com/hlrichardson/vagrants
 cd vagrants/ovn-3node
 ```
 
-Create CentOS VMs (OVN central and two OVN compute nodes):
+Create a CentOS VM
 
 ```bash
-vagrant up central
-vagrant up compute1
-vagrant up compute2
+vagrant up
 ```
 
 After provisioning is complete, ssh to central node, if
-everything is worrking `ovn-sbctl show` should list two
+everything is worrking `ovn-sbctl show` should list one
 chassis:
 ```bash
 vagrant ssh central
@@ -38,11 +36,16 @@ sudo ovn-sbctl show
 exit
 ```
 
-Optionally, a third compute node running Fedora can be started:
-```bash
-vagrant up compute3
-exit
-```
+The provisioning will set up three network namespaces on
+the central node, each with a network device that gets
+its IP address and default route via DHCP from OVN. The
+vm1 and vm2 devices are on the 172.16.255.192/26 network
+and the vm3 device is on the 10.0.0.0/24 network. You
+can view the setup\_routing\_central file to see how
+the OVN logical switches and routers were set up, as well
+as how the network namespaces were set up. The file is
+well commented so you should understand how everything
+fits together.
 
 When done, clean up:
 
@@ -53,4 +56,3 @@ vagrant destroy
 See also:
 * http://www.flaviof.com/blog2/post/main/just-ovn-nodes/
 * http://blog.spinhirne.com/2016/09/a-primer-on-ovn.html
-
