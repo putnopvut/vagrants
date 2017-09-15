@@ -48,6 +48,20 @@ as how the network namespaces were set up. The file is
 well commented so you should understand how everything
 fits together.
 
+You can view the IP address of a given device:
+```bash
+vagrant ssh central
+sudo ip netns exec vm1 ip addr show vm1
+exit
+```
+You can do the same thing with the vm2 and vm3 namespaces to
+verify their address assignments. The expected assigned IP
+addresses are:
+
+* vm1: 172.16.255.196
+* vm2: 172.16.255.197
+* vm3: 10.0.0.101
+
 When done, clean up:
 
 ```bash
