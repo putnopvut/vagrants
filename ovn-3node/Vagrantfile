@@ -72,6 +72,7 @@ Vagrant.configure("2") do |config|
 
       ovn_cfg.each do |entry|
           node.vm.provision "shell", inline: %Q(sudo sh -c "echo \\\"#{entry[:ip]} #{entry[:name]}\\\" >> /etc/hosts")
+          node.vm.provision "shell", inline: %Q(sudo sh -c "setenforce 0")
       end
 
       node.vm.hostname = server[:host_name]
