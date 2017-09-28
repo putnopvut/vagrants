@@ -1,5 +1,5 @@
 ovn_repo         = "https://github.com/putnopvut/ovs.git"
-ovn_branch       = "periodic_ra"
+ovn_branch       = "ip_nd"
 ovn_pkg_dir      = "/vagrant/pkgs"
 
 dmz_network="fd94:41f3:071a:9d54"

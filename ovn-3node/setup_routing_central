@@ -13,7 +13,7 @@ sudo ovn-nbctl ls-add dmz
 sudo ovn-nbctl lr-add tenant1
 
 sudo ovn-nbctl lrp-add tenant1 tenant1-dmz ${dmz_mac} ${dmz_network}
-sudo ovn-nbctl set logical_router_port tenant1-dmz ipv6_ra_configs:send_periodic=true
+#sudo ovn-nbctl set logical_router_port tenant1-dmz ipv6_ra_configs:send_periodic=true
 sudo ovn-nbctl set logical_router_port tenant1-dmz ipv6_ra_configs:address_mode=slaac
 
 ovn-nbctl lsp-add dmz dmz-tenant1
@@ -29,17 +29,17 @@ ovn-nbctl lsp-set-addresses inside-tenant1 ${inside_mac}
 ovn-nbctl lsp-set-options inside-tenant1 router-port=tenant1-inside
 
 ovn-nbctl lsp-add dmz dmz-vm1
-ovn-nbctl lsp-set-addresses dmz-vm1 "02:ac:10:ff:01:30 fd94:41f3:071a:9d54::2"
-ovn-nbctl lsp-set-port-security dmz-vm1 "02:ac:10:ff:01:30 fd94:41f3:071a:9d54::2"
+ovn-nbctl lsp-set-addresses dmz-vm1 "02:ac:10:ff:01:30 fd94:41f3:71a:9d54:ac:10ff:feff:130"
+ovn-nbctl lsp-set-port-security dmz-vm1 "02:ac:10:ff:01:30 fd94:41f3:71a:9d54:ac:10ff:feff:130"
 
 ovn-nbctl lsp-add dmz dmz-vm2
-ovn-nbctl lsp-set-addresses dmz-vm2 "02:ac:10:ff:01:31 fd94:41f3:071a:9d54::3"
-ovn-nbctl lsp-set-port-security dmz-vm2 "02:ac:10:ff:01:31 fd94:41f3:071a:9d54::3"
+ovn-nbctl lsp-set-addresses dmz-vm2 "02:ac:10:ff:01:31 fd94:41f3:71a:9d54:ac:10ff:feff:131"
+ovn-nbctl lsp-set-port-security dmz-vm2 "02:ac:10:ff:01:31 fd94:41f3:71a:9d54:ac:10ff:feff:131"
 
 ovn-nbctl lsp-add inside inside-vm3
-ovn-nbctl lsp-set-addresses inside-vm3 "02:ac:10:ff:01:94 fd94:41f3:071a:9d55::2"
-ovn-nbctl lsp-set-port-security inside-vm3 "02:ac:10:ff:01:94 fd94:41f3:071a:9d55::2"
+ovn-nbctl lsp-set-addresses inside-vm3 "02:ac:10:ff:01:94 fd94:41f3:71a:9d55:ac:10ff:feff:194"
+ovn-nbctl lsp-set-port-security inside-vm3 "02:ac:10:ff:01:94 fd94:41f3:71a:9d55:ac:10ff:feff:194"
 
 ovn-nbctl lsp-add inside inside-vm4
-ovn-nbctl lsp-set-addresses inside-vm4 "02:ac:10:ff:01:95 fd94:41f3:071a:9d55::3"
-ovn-nbctl lsp-set-port-security inside-vm4 "02:ac:10:ff:01:95 fd94:41f3:071a:9d55::3"
+ovn-nbctl lsp-set-addresses inside-vm4 "02:ac:10:ff:01:95 fd94:41f3:71a:9d55:ac:10ff:feff:195"
+ovn-nbctl lsp-set-port-security inside-vm4 "02:ac:10:ff:01:95 fd94:41f3:71a:9d54:ac:10ff:feff:195"
