@@ -13,7 +13,7 @@ sudo ovn-nbctl ls-add dmz
 sudo ovn-nbctl lr-add tenant1
 
 sudo ovn-nbctl lrp-add tenant1 tenant1-dmz ${dmz_mac} ${dmz_network}
-#sudo ovn-nbctl set logical_router_port tenant1-dmz ipv6_ra_configs:send_periodic=true
+sudo ovn-nbctl set logical_router_port tenant1-dmz ipv6_ra_configs:send_periodic=true
 sudo ovn-nbctl set logical_router_port tenant1-dmz ipv6_ra_configs:address_mode=slaac
 
 ovn-nbctl lsp-add dmz dmz-tenant1
