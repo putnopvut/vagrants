@@ -24,9 +24,7 @@ cd vagrants/ovn-3node
 Create CentOS VMs (OVN central and two OVN compute nodes):
 
 ```bash
-vagrant up central
-vagrant up compute1
-vagrant up compute2
+vagrant up 
 ```
 
 After provisioning is complete, ssh to central node, if
@@ -35,12 +33,6 @@ chassis:
 ```bash
 vagrant ssh central
 sudo ovn-sbctl show
-exit
-```
-
-Optionally, a third compute node running Fedora can be started:
-```bash
-vagrant up compute3
 exit
 ```
 
