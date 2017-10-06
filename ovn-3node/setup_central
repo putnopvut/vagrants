@@ -31,7 +31,7 @@ sudo systemctl start ovn-controller
 # Configure OVN central services
 sudo ovn-nbctl init
 sudo ovn-nbctl set-ssl /vagrant/pki/ovnnb-privkey.pem  /vagrant/pki/ovnnb-cert.pem /vagrant/pki/switchca/cacert.pem
-sudo ovn-nbtl set-connection pssl:6641
+sudo ovn-nbctl set-connection pssl:6641
 
 sudo ovn-sbctl init
 sudo ovn-sbctl set-ssl /vagrant/pki/ovnsb-privkey.pem  /vagrant/pki/ovnsb-cert.pem /vagrant/pki/switchca/cacert.pem
