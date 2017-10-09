@@ -39,7 +39,7 @@ sudo ovn-sbctl set-connection role=ovn-controller pssl:6642
 
 sudo ovs-pki --dir=/vagrant/pki -B 1024 -u req+sign central switch
 
-sudo ovs-vsctl set-ssl /vagrant/pki/central-privkey.pem /vagrant/pki/central-cert.pem /vagrant/pki/switchca/cacert.pem
+sudo ovs-vsctl set-ssl /home/vagrant/central-privkey.pem /home/vagrant/central-cert.pem /vagrant/pki/switchca/cacert.pem
 
 sudo ovs-vsctl --no-wait init
 sudo ovs-vsctl --no-wait set open_vswitch . system-type="vagrant"
