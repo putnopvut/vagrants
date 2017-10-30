@@ -50,6 +50,7 @@ Vagrant.configure("2") do |config|
 
       setup_args = "#{server[:ip]} #{ovn_repo} #{ovn_branch}"
       node.vm.provision "shell", path: "setup_central", :args => "#{setup_args}" 
+      node.vm.provision "shell", path: "setup_routing_central"
     end
   end
 end
