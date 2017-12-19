@@ -30,16 +30,10 @@ sudo systemctl start ovn-controller
 
 # Configure OVN central services
 sudo ovn-nbctl init
-sudo ovn-nbctl set-ssl /vagrant/pki/ovnnb-privkey.pem  /vagrant/pki/ovnnb-cert.pem /vagrant/pki/switchca/cacert.pem
-sudo ovn-nbctl set-connection pssl:6641
+sudo ovn-nbctl set-connection ptcp:6641
 
 sudo ovn-sbctl init
-sudo ovn-sbctl set-ssl /vagrant/pki/ovnsb-privkey.pem  /vagrant/pki/ovnsb-cert.pem /vagrant/pki/switchca/cacert.pem
-sudo ovn-sbctl set-connection role=ovn-controller pssl:6642
-
-sudo ovs-pki --dir=/vagrant/pki -B 1024 -u req+sign central switch
-
-sudo ovs-vsctl set-ssl /home/vagrant/central-privkey.pem /home/vagrant/central-cert.pem /vagrant/pki/switchca/cacert.pem
+sudo ovn-sbctl set-connection ptcp:6642
 
 sudo ovs-vsctl --no-wait init
 sudo ovs-vsctl --no-wait set open_vswitch . system-type="vagrant"
@@ -49,4 +43,4 @@ sudo ovs-vsctl --no-wait set open_vswitch . external-ids:hostname=central
 sudo ovs-vsctl --no-wait set open_vswitch . external-ids:ovn-bridge="br-int"
 sudo ovs-vsctl --no-wait set open_vswitch . external-ids:ovn-encap-ip=127.0.0.1
 sudo ovs-vsctl --no-wait set open_vswitch . external-ids:ovn-encap-type="geneve"
-sudo ovs-vsctl --no-wait set open_vswitch . external-ids:ovn-remote=ssl:127.0.0.1:6642
+sudo ovs-vsctl --no-wait set open_vswitch . external-ids:ovn-remote=tcp:127.0.0.1:6642
