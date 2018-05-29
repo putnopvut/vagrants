@@ -21,28 +21,36 @@ git clone https://github.com/hlrichardson/vagrants
 cd vagrants/ovn-3node
 ```
 
-Create CentOS VMs (OVN central and two OVN compute nodes):
+Create CentOS VM:
 
 ```bash
-vagrant up central
-vagrant up compute1
-vagrant up compute2
+vagrant up
 ```
 
-After provisioning is complete, ssh to central node, if
-everything is worrking `ovn-sbctl show` should list two
-chassis:
+This will create a load balancer scenario you can test. There are
+scripts included that can help you to test properly. I found the
+easiest way to test is to open multiple ssh sessions.
+
+In session 1
 ```bash
 vagrant ssh central
-sudo ovn-sbctl show
-exit
+/vagrant/run_http.sh vm1
 ```
 
-Optionally, a third compute node running Fedora can be started:
+In session 2
 ```bash
-vagrant up compute3
-exit
+vagrant ssh central
+/vagrant/run_http.sh vm2
 ```
+
+In session 3
+```bash
+vagrant ssh central
+/vagrant/curl_http.sh 10.0.0.100:8000
+```
+
+In session 3, you should see either "I am vm1" or "I am vm2"
+each time you run the `curl_http.sh` script.
 
 When done, clean up:
 
